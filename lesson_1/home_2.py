@@ -33,3 +33,4 @@ print(id(a))  # одинаковые   id
 print(id(s))
 print(a is s)  #True - сравниваются не значения а id(a) и id(b)
 
+print('for git')
