@@ -16,7 +16,7 @@ rows = cur.execute(query_sql).fetchall()
 print(rows)
 for row in rows:
     if row[1] > 1:
-        print(row)
+        print(*row)
 
 
 connection.close()
