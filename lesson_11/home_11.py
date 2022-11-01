@@ -69,25 +69,33 @@ def check_function(value):
 
 
 # вариант 1
-# while True:
+# def while_func():
+#     while True:
+#         input_value = input("введите число: ")
+#         print(check_function(input_value))
 #
-#     input_value = input("введите число: ")
-#     print(check_function(input_value))
+#         answer = input("Для выхода введите одно из слов: 'выход', 'exit', 'quit', 'e', 'q': ")
+#         if answer.lower() in ("выход", "exit", "quit", "e", "q"):
+#             break
 #
 #
-#     answer = input("Для выхода введите одно из слов: 'выход', 'exit', 'quit', 'e', 'q': ")
-#     if answer.lower() in ("выход", "exit", "quit", "e", "q"):
-#         break
+# while_func()
 
 
-# вариант 2
-while True:
 
-    input_value = input("введите число\ для выхода: 'выход', 'exit', 'quit', 'e', 'q': ")
-    if input_value.lower() in ("выход", "exit", "quit", "e", "q"):
-        break
-    else:
-        print(check_function(input_value))
+
+
+#вариант 2
+def while_func():
+    while True:
+        input_value = input("введите число\ для выхода: 'выход', 'exit', 'quit', 'e', 'q': ")
+        if input_value.lower() in ("выход", "exit", "quit", "e", "q"):
+            break
+        else:
+            print (check_function(input_value))
+
+
+while_func()
 
 
 
