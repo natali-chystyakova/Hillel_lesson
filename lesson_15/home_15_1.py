@@ -46,10 +46,13 @@ class Circle(Point):
         x = self.x - other.x
         y = self.y - other.y
         radius = abs(self.radius - other.radius)
-        return Circle(radius, x, y)
+        if radius == 0:
+            return Point(x, y)
+        else:
+            return Circle(radius, x, y)
 
     def __str__(self):
-        if self.radius == 0:
+        if self is Point:
             return super().__str__()
         else:
             return 'Circle' + super().__str__()[5:] + f', radius={self.radius}'
@@ -64,13 +67,15 @@ class Circle(Point):
 
 m = Circle(6, 2, 3)
 n = Circle(3)
-l = Circle(56, 5, 7)
+l = Circle(6, 5, 7)
 
 z = m - l
 print(z)
+print(type(z))
 
 z = n - m
 print(z)
+print(type(z))
 g = Circle(-6, -2, -3)
 c = abs(g)
 print(c)
