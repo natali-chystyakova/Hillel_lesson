@@ -33,6 +33,7 @@
 # *Важно! Результатом сложения или вычитания всегда будет объект типа String.
 
 
+
 class String(str):
     def __init__(self, text):
         self.text = text
@@ -40,7 +41,7 @@ class String(str):
     def __add__(self, other):
         self.text = str(self.text)
         other.text = str(other.text)
-        return self.text + other.text
+        return String(self.text + other.text)
 
     def __len__(self):
         return len(self)
@@ -51,9 +52,9 @@ class String(str):
         other.text = str(other.text)
         ins = self.text.find(other.text)
         if ins == -1:
-            return self.text
+            return String(self.text)
         else:
-            return self.text[: ins] + self.text[ins+len(other.text):]
+            return String(self.text[: ins] + self.text[ins+len(other.text):])
 
 
 
