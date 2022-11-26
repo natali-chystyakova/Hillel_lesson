@@ -69,7 +69,7 @@ def main():
         elif int(choice) == 0:
             break
         data = DB
-        call_function = {1: data.input_data, 2: data.find, 3: data.get_from_lile,
+        call_function = {1: data.input_data, 2: data.find, 3: data.get_from_file,
                          4: data.get_intu_file, 5: data.export_in_json}
         call_function[int(choice)](int(choice))
 
