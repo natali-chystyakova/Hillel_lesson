@@ -192,16 +192,16 @@ class DB():
             name1 = input("Введите поисковый запрос ")
             with open("spisok.csv", encoding='utf-8') as f:
                 lines = f.readlines()
-                # try:
+
                 for line in lines:
                     if line.find(name1) != -1:
                         print(name1, ':запись есть')
                         print('строка №', lines.index(line))
                         print('Информация подробно: ', line)
+                    else:
+                        print("Совпадений нет")
+                        break
                 break
-                # except FileNotFoundError:
-                #     print('Совпадений нет')
-                #     break
 
 
     def get_from_file(self):
