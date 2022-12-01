@@ -199,9 +199,7 @@ class DB():
                             print(name1, ':запись есть')
                             print('строка №', lines.index(line))
                             print('Информация подробно: ', line)
-                        else:
-                            print("Совпадений нет")
-                            break
+
                     break
             except FileNotFoundError:
                 print("База данных еще не создана")
