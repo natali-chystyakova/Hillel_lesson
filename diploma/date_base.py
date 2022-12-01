@@ -186,27 +186,31 @@ class DB():
     def __str__(self):
         return f'{self.name}{self.otchestvo}{self.surname}{self.gender}{self.age}{self.date_of_birth}{self.date_of_death}'
 
-    def find(self):   #выводит только из сsw, а надо из списка
+    def find(self):
 
         while True:
             name1 = input("Введите поисковый запрос ")
             with open("spisok.csv", encoding='utf-8') as f:
                 lines = f.readlines()
+                # try:
                 for line in lines:
                     if line.find(name1) != -1:
                         print(name1, ':запись есть')
                         print('строка №', lines.index(line))
                         print('Информация подробно: ', line)
                 break
+                # except FileNotFoundError:
+                #     print('Совпадений нет')
+                #     break
 
 
-    def get_from_file(self):  #файл combined
+    def get_from_file(self):
 
         while True:
             files = glob.glob("*.csv")
             print('файлы для обьединения:', files)
             combined = pd.DataFrame()
-            for file in files:   # оьеденил к  нулевой строке, к заглавию
+            for file in files:
                 data = pd.read_csv(file)
                 data['filename'] = file
                 combined = pd.concat([combined, data])
@@ -214,33 +218,6 @@ class DB():
                 print('файлы обьеденены в одну базу данных')
             break
 
-     #    wb2 = openpyxl.load_workbook("for diploma.xlsx")  # вызываем у обьекта метод load_workbook()
-     #    print(wb2.sheetnames)  # выведем,какие есть листы ['list1', 'list2']
-     #
-     #    sheet = wb2.active  # вібрали активній лист
-     #    print(sheet)
-     #
-     #    print(sheet['A1'].value)  # прочитать значение value в ячейке 'A1'
-     #
-     # # если мы не знаем, сколько рабочих ячеек
-     #    rows = sheet.max_row
-     #    cols = sheet.max_column
-     #    print(rows)  # 3
-     #    print(cols)  # 3
-     #    data = []
-     #
-     #    for i in range(1, rows + 1):
-     #        row_data = []
-     #        for j in range(1, cols + 1):
-     #            cell = sheet.cell(row=i, column=j)
-     #            row_data.append(cell.value)  # добавляем список строки
-     #        data.append(row_data)  # добавляем в общий список
-     #
-     #    print(data)  # [['list2', None, 90], [None, 'gh', None], [78, None, 90]]
-     #
-     #    with open("spisok.csv", "a", encoding="utf-8", newline='') as f1:
-     #        file_writer = csv.writer(f1)
-     #        file_writer.writerow(data)
 
 
     def get_intu_file(self):
