@@ -45,16 +45,18 @@
 # производить поиск по уже введённым данным;
 # правильно рассчитывать количество полных лет человека на основе даты рождения и даты
 # смерти или текущей даты.
-import datetime
+import pandas as pd
+import glob
 import csv
 import json
+import openpyxl
+from datetime import date
+
 
 class DB():
-    TOTAL_OBJECTS = 0
-
+    #TOTAL_OBJECTS = 0
 
     def input_data(self):
-
 
         while True:
             name = input("Введите имя ")
@@ -63,7 +65,6 @@ class DB():
                 continue
             else:
                 break
-
 
         while True:
             print("Чтобы пропустить - нажмите 'Enter'")
@@ -85,12 +86,13 @@ class DB():
                 break
 
         while True:
-            date_of_birth = input("Введите дату рождения в формате:'dd.mm.yyyy', 'dd/mm/yyyy', 'dd mm yyyy', 'd-m-yyyy'")
+            date_of_birth = input(
+                "Введите дату рождения в формате:'dd.mm.yyyy', 'dd/mm/yyyy', 'dd mm yyyy', 'd-m-yyyy'")
             if date_of_birth == "":
                 print('Неверный ввод')
                 continue
             for item in date_of_birth:
-                if item not in ("-. 1234567890") :
+                if item not in ("-. 1234567890"):
                     print('Неверный ввод')
                     break
             else:
@@ -106,35 +108,22 @@ class DB():
                     break
             else:
                 break
+
+
+
         while True:
             gender = input("введите пол: мужчина - 'm', женщина - 'f' ")
-            if gender not in ('mf') and len(gender) > 1:
+            if len(gender) > 1 or gender not in 'mf':
                 print('Неверный ввод')
                 continue
             else:
                 break
 
-
-        return DB(name, date_of_birth, gender, surname, otchestvo, date_of_death)
-
-
-
-    def __init__(self, name, date_of_birth, gender, surname="", otchestvo="", date_of_death="000"):
-
-        self.name = name
-        self.date_of_birth = date_of_birth
-        self.gender = gender
-        self.surname = surname
-        self.otchestvo = otchestvo
-        self.date_of_death = date_of_death
-        DB.TOTAL_OBJECTS += 1
-        input_person = []
-        @property
-        def fool_age():
+        def fool_age(date_of_birth, date_of_death=""):
 
             def split_data(data):
                 if " " in data:
-                    return (data.split())
+                    return (data.split(" "))
                 elif "." in data:
                     return (data.split("."))
                 elif "/" in data:
@@ -142,152 +131,143 @@ class DB():
                 elif "-" in data:
                     return (data.split("-"))
 
-            if self.date_of_death:
-                day_b, month_b, year_b = split_data(self.date_of_birth)
-                day_d, month_d, year_d = split_data(self.date_of_death)
-                birthday = datetime.date(int(year_b), int(month_b), int(day_b))
-                print(birthday)
-                death = datetime.date(int(year_d), int(month_d), int(day_d))
-                print(death)
-                self.age = int(death.strftime("%Y")) - int(birthday.strftime("%Y"))
-                print(self.age)
-                return self.age
+            if date_of_death:
+                day_b, month_b, year_b = (split_data(date_of_birth))
+                day_d, month_d, year_d = (split_data(date_of_death))
+                birthday = date(int(year_b), int(month_b), int(day_b))
+
+                death = date(year_d, month_d, day_d)
+
+                age = int(death.strftime("%Y%m%d")) // 10000 - int(birthday.strftime("%Y%m%d")) // 10000
+                print(f"Полных лет {age}")
+                return age
             else:
-                day_b, month_b, year_b = split_data(self.date_of_birth)
-                birthday = datetime.date(int(year_b), int(month_b), int(day_b))
-                print(birthday)
-                today = datetime.date.today()
-                print(today)
-                self.age = int(today.strftime("%Y")) - int(birthday.strftime("%Y"))
-                print(self.age)
-                return self.age
+                day_b, month_b, year_b = (split_data(date_of_birth))
+                birthday = date(int(year_b), int(month_b), int(day_b))
 
-        # @property  # геттер
-        # def ful_name():  # метод теперь будет использовать текущие имя и фамилию
-        #     return str(self.name + self.surname + self.otchestvo)
+                today = date.today()
 
-        # @property
-        # def other_data():
-        #     return f"{self.gender} {self.date_of_birth} {self.date_of_death}"
+                age = int(today.strftime("%Y%m%d")) // 10000 - int(birthday.strftime("%Y%m%d")) // 10000
+                print(f"Полных лет {age}")
+                return age
 
-        data_dict = {f'{self.name} {self.surname} {self.otchestvo}': [self.gender, self.date_of_birth, self.date_of_death]}
-        data_dict.update(data_dict)
-        input_person.append(data_dict)
-        print(input_person)
+        age = fool_age(date_of_birth, date_of_death)
 
+        return DB(name, date_of_birth, gender, age, surname, otchestvo, date_of_death)
 
-        # Записать в файл в формате json
-        with open("diploma.json", "a") as f:  # открыли файл на запись в формате json
-            json.dump(input_person, f)  #
+    def __init__(self, name, date_of_birth, gender, age, surname="", otchestvo="", date_of_death=""):
+
+        self.name = name
+        self.date_of_birth = date_of_birth
+        self.gender = gender
+        self.age = age
+        self.surname = surname
+        self.otchestvo = otchestvo
+        self.date_of_death = date_of_death
+        #DB.TOTAL_OBJECTS += 1
 
 
-        name_of_line = ['name', 'date_of_birth', 'gender', 'surname', 'otchestvo', 'date_of_death']
-        line = [self.name, self.date_of_birth, self.gender, self.surname, self.otchestvo, self.date_of_death]
-
-        if DB.TOTAL_OBJECTS <= 1:
+        data_dict = {f'{self.name} {self.surname} {self.otchestvo}': [self.age, self.gender, self.date_of_birth,
+                                                                    self.date_of_death]}
 
 
+        print(data_dict)
 
-            with open("diploma.csv", "w", encoding="utf-8", newline='') as f1:
-                file_writer = csv.writer(f1)
-                file_writer.writerow(name_of_line)
-                file_writer.writerow(line)
+        with open("spisok.json", "a", encoding="utf-8") as f:  # открыли файл на запись в формате json
+            json.dump(data_dict, f, indent=4)
 
+        line = [self.name, self.surname, self.otchestvo, self.age, self.gender, self.date_of_birth, self.date_of_death]
 
+        #if DB.TOTAL_OBJECTS <= 1:
+        with open("spisok.csv", "a", encoding="utf-8", newline='') as f1:
+            file_writer = csv.writer(f1)
+            file_writer.writerow(line)
 
-        else:
-            with open("diploma.csv", "a", encoding="utf-8", newline='') as f1:
-                file_writer = csv.writer(f1)
-                file_writer.writerow(line)
-    # @property
-    # def fool_age(self):
-    #
-    #     def split_data(data):
-    #         if " " in data:
-    #             return (data.split())
-    #         elif "." in data:
-    #             return (data.split("."))
-    #         elif "/" in data:
-    #             return (data.split("/"))
-    #         elif "-" in data:
-    #             return (data.split("-"))
-    #
-    #     if self.date_of_death:
-    #         day_b, month_b, year_b = split_data(self.date_of_birth)
-    #         day_d, month_d, year_d = split_data(self.date_of_death)
-    #         birthday = datetime.date(int(year_b), int(month_b), int(day_b))
-    #         print(birthday)
-    #         death = datetime.date(int(year_d), int(month_d), int(day_d))
-    #         print(death)
-    #         self.age = int(death.strftime("%Y")) - int(birthday.strftime("%Y"))
-    #         print(self.age)
-    #         return self.age
-    #     else:
-    #         day_b, month_b, year_b = split_data(self.date_of_birth)
-    #         birthday = datetime.date(int(year_b), int(month_b), int(day_b))
-    #         print(birthday)
-    #         today = datetime.date.today()
-    #         print(today)
-    #         self.age = int(today.strftime("%Y")) - int(birthday.strftime("%Y"))
-    #         print(self.age)
-    #         return self.age
-    #
-    # @property  # геттер
-    # def ful_name(self):  # метод теперь будет использовать текущие имя и фамилию
-    #     return f"{self.name} {self.surname} {self.otchestvo}"
-    #
-    # @property
-    # def other_data(self):
-    #     return f"{self.gender} {self.date_of_birth} {self.date_of_death}"
+    def __str__(self):
+        return f'{self.name}{self.otchestvo}{self.surname}{self.gender}{self.age}{self.date_of_birth}{self.date_of_death}'
+
+    def find(self):   #выводит только из сsw, а надо из списка
+
+        while True:
+            name1 = input("Введите поисковый запрос ")
+            with open("spisok.csv", encoding='utf-8') as f:
+                lines = f.readlines()
+                for line in lines:
+                    if line.find(name1) != -1:
+                        print(name1, ':запись есть')
+                        print('строка №', lines.index(line))
+                        print('Информация подробно: ', line)
+                break
 
 
+    def get_from_file(self):  #файл combined
 
+        while True:
+            files = glob.glob("*.csv")
+            print('файлы для обьединения:', files)
+            combined = pd.DataFrame()
+            for file in files:   # оьеденил к  нулевой строке, к заглавию
+                data = pd.read_csv(file)
+                data['filename'] = file
+                combined = pd.concat([combined, data])
+                combined.to_csv('combined.csv', index=False, sep=';')
+                print('файлы обьеденены в одну базу данных')
+            break
 
+     #    wb2 = openpyxl.load_workbook("for diploma.xlsx")  # вызываем у обьекта метод load_workbook()
+     #    print(wb2.sheetnames)  # выведем,какие есть листы ['list1', 'list2']
+     #
+     #    sheet = wb2.active  # вібрали активній лист
+     #    print(sheet)
+     #
+     #    print(sheet['A1'].value)  # прочитать значение value в ячейке 'A1'
+     #
+     # # если мы не знаем, сколько рабочих ячеек
+     #    rows = sheet.max_row
+     #    cols = sheet.max_column
+     #    print(rows)  # 3
+     #    print(cols)  # 3
+     #    data = []
+     #
+     #    for i in range(1, rows + 1):
+     #        row_data = []
+     #        for j in range(1, cols + 1):
+     #            cell = sheet.cell(row=i, column=j)
+     #            row_data.append(cell.value)  # добавляем список строки
+     #        data.append(row_data)  # добавляем в общий список
+     #
+     #    print(data)  # [['list2', None, 90], [None, 'gh', None], [78, None, 90]]
+     #
+     #    with open("spisok.csv", "a", encoding="utf-8", newline='') as f1:
+     #        file_writer = csv.writer(f1)
+     #        file_writer.writerow(data)
 
-
-
-    def find(self):
-        # # Распечатать файл в пайтоне из json
-        # with open("task_01.json", "r") as f:  # открыли файл
-        #     output_data = json.load(f)  # прочитали и сохранили из файла f в переменную output_data
-        #
-        # print("output_data:\n", output_data)  # распечатать с новой строки
-        # while True:
-        #     find = input("Поиск ")
-        #
-        #     if find == '' or not find.isalpha():
-        #         print('Неверный ввод')
-        #         continue
-        #     else:
-        #
-        #         for key in input_person.items():
-
-        # dict.keys()
-        # с
-        # помощью
-        # цикла
-        # for берешь нужный
-        #
-        # _dict = {
-        #     'Name': 'noname',
-        #     'Age': '100',
-        #     'IQ': '0'
-        # }
-        #
-        # for key in _dict.keys():
-        #     if key == 'IQ':
-        #         print(_dict.get(key))
-        ...
-
-
-    def get_from_file(self):  # взять загрузить из excel-евского файла
-        ...
 
     def get_intu_file(self):
-        ...
+
+        while True:
+            with open("combined.csv", encoding="utf-8") as f:
+                file_reader = csv.reader(f)
+                data = list(file_reader)
+                data11 = open("combined.txt", "w", encoding="utf-8")
+                data11.write(f'{data}')
+                data11.close()
+                print('БД сохранена в формате txt')
+            break
 
     def export_in_json(self):
-        ...
+
+        while True:
+            d = {}
+            with open("combined.txt") as file:
+                for line in file:
+                    key, *value = line.split()
+                    d[key] = value
+                    print(value)
 
 
+            with open("combined.json", "w", encoding="utf-8") as f:
+                json.dump(value, f, indent=4)
+                print('БД готова для передачи')
+            break
 
