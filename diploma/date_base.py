@@ -200,6 +200,7 @@ class DB():
                             print('строка №', lines.index(line))
                             print('Информация подробно: ', line)
 
+
                     break
             except FileNotFoundError:
                 print("База данных еще не создана")
@@ -208,24 +209,48 @@ class DB():
 
     def get_from_file(self):
 
-        while True:
-            files = glob.glob("*.csv")
-            print('файлы для обьединения:', files)
-            combined = pd.DataFrame()
-            for file in files:
-                data = pd.read_csv(file)
-                data['filename'] = file
-                combined = pd.concat([combined, data])
-                combined.to_csv('combined.csv', index=False, sep=';')
-                print('файлы обьеденены в одну базу данных')
-            break
+        # while True:
+        #     files = glob.glob("*.csv")
+        #     print('файлы для обьединения:', files)
+        #     combined = pd.DataFrame()
+        #     for file in files:
+        #         data = pd.read_csv(file)
+        #         data['filename'] = file
+        #         combined = pd.concat([combined, data])
+        #         combined.to_csv('combined.csv', index=False, sep=';')
+        #         print('файлы обьеденены в одну базу данных')
+        #     break
 
+        wb2 = openpyxl.load_workbook("for diploma.xlsx")
+        print(wb2.sheetnames)
 
+        sheet = wb2.active
+        print(sheet)
+
+        rows = sheet.max_row
+        cols = sheet.max_column
+        print(rows)
+        print(cols)
+        data = []
+
+        for i in range(2, rows + 1):
+            row_data = []
+            for j in range(1, cols + 1):
+                cell = sheet.cell(row=i, column=j)
+                row_data.append(cell.value)
+            data.append(row_data)
+
+        print(data)
+
+        with open("spisok.csv", "a", encoding="utf-8", newline='') as f1:
+            file_writer = csv.writer(f1)
+            for elem in data:
+                file_writer.writerow(elem)
 
     def get_intu_file(self):
 
         while True:
-            with open("combined.csv", encoding="utf-8") as f:
+            with open("spisok.csv", encoding="utf-8") as f:
                 file_reader = csv.reader(f)
                 data = list(file_reader)
                 data11 = open("combined.txt", "w", encoding="utf-8")
@@ -245,8 +270,8 @@ class DB():
                     print(value)
 
 
-            with open("combined.json", "w", encoding="utf-8") as f:
-                json.dump(value, f, indent=4)
+            with open("combined.json", "w") as f:
+                json.dump(value, f, indent=4, ensure_ascii=False )   #
                 print('БД готова для передачи')
             break
 
